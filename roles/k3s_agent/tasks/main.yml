@@ -28,6 +28,19 @@
       group: root
       mode: '0755'
 
+- name: Check if kubectl is installed
+  ansible.builtin.command:
+      cmd: which kubectl
+  register: kubectl_installed
+  ignore_errors: true
+  changed_when: false
+
+- name: Install kubectl
+  ansible.builtin.package:
+      name: kubectl
+      state: present
+  when: kubectl_installed.rc != 0
+
 - name: Manage k3s service
   ansible.builtin.systemd:
       name: k3s-node
