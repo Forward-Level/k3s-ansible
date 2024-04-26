@@ -8,16 +8,17 @@ This repository and playbook represents the configuration for running forwardlev
 
 On the controlling device (eg, my local Mac):
 
-- Ansible
-  - `brew install ansible`
+-   Ansible
+    -   `brew install ansible`
+    -   On Ubuntu, `apt-get install pipx -y && pipx install --include-deps ansible`
 
 On the deployment servers:
 
-- TBD
+-   TBD
 
 Optionally
 
-- Tailscale
+-   Tailscale
 
 ## INSTALLATION STEPS
 
@@ -32,13 +33,13 @@ When you clone such a project, by default you get the directories that contain s
 
 Alternatively, run:
 
-`git clone --recurse-submodules https://github.com/forward-level/xyz`
+`git clone --recurse-submodules git@github.com:Forward-Level/k3s-ansible.git`
 
 It will automatically initialize and update each submodule in the repository, including nested submodules if any of the submodules in the repository have submodules themselves.
 
 If you want to do it the hard way, `git clone xyz` …downloads as normal but, while the submodule directory is there, it is empty. You must run the following two commands:
 
-    1. `git submodule init` to initialize your local configuration file, and 
+    1. `git submodule init` to initialize your local configuration file, and
     2. `git submodule update` to fetch all the data from that project and check out the appropriate commit listed in your superproject.
 
 ### 2. Ansible
@@ -67,7 +68,6 @@ Edit the `inventory/my-cluster/hosts.ini` file with the IPs of our control serve
     master
     node
     ```
-
 
 ### 2a Preparing test servers:
 
@@ -192,10 +192,10 @@ Use the health checks. They allow you to adapt your server back-end to the curre
         # twice the number of requests compared to `andys-imac`.
 
         # `LINODE_WORKER1` and `LINODE_WORKER2` have weights of 4;
-        # the other two servers have the default weight (1), but 
+        # the other two servers have the default weight (1), but
         # FALLBACK_WORKER1, FALLBACK_WORKER2, and FALLBACK_WORKER3 are
         # marked as backup servers and do not receive requests unless both
-        # of the other servers are unavailable. With this configuration of 
+        # of the other servers are unavailable. With this configuration of
         # weights, out of every 6 requests, 5 are sent to backend1.example.com and 1 to backend2.example.com.
 
         # It's generally a good idea to have health checks on all servers.
@@ -248,7 +248,7 @@ Prerequisites:
 
     The only special software required is Ansible, running on one central device that manipulates the remote targets. If you wish to learn more about Ansible, the [official documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html) is quite extensive.
 
-    NOTE: From the Rancher documentation, [Deploying k3s with Ansible](https://www.suse.com/c/rancher_blog/deploying-k3s-with-ansible/), regarding the Ubuntu installation phase: 
+    NOTE: From the Rancher documentation, [Deploying k3s with Ansible](https://www.suse.com/c/rancher_blog/deploying-k3s-with-ansible/), regarding the Ubuntu installation phase:
     > The 'SSH Setup' screen is also important. The Ubuntu Server installation process lets you import SSH public keys from a GitHub profile, allowing you to connect via SSH to your newly created VM with your existing SSH key. To take advantage of this, [make sure you add an SSH key to GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) before completing this step. This is highly recommended, as although Ansible can connect to your VMs via SSH using a password, doing so requires extra configuration. It is also generally good to use SSH keys rather than passwords for security reasons.
 
 ### 4. Installing Helm
@@ -319,7 +319,7 @@ If using Tailscale to manage the network, provide the following:
 Finally, I have provisioned three fallback workers that should be the lowest priority on the stack.
 
      - `FALLBACK_WORKER1` is on my personal Linode server, `orbital`
-     - `FALLBACK_WORKER2` is an Ubuntu container on my homelab Proxmox server. 
+     - `FALLBACK_WORKER2` is an Ubuntu container on my homelab Proxmox server.
      - `FALLBACK_WORKER3` is an Ubuntu-based Docker container on my desktop at the office
 
 I've set these three fallbacks up in a named order that implies their expected availability and internet speeds. Linode's fiber backbone connection is going to be the most reliable, and their uptime guarantee is pretty solid. My home internet plan is 1000mbps and the machines are on 24/7, but have no guarantees. At the office, the wifi is slow(er) and truly anything could happen.
