@@ -23,38 +23,138 @@
 - name: Configure the k3s service
   ansible.builtin.template:
       src: 'k3s.service.j2'
-      dest: '{{ systemd_dir }}/k3s-node.service'
+      dest: '{{ systemd_dir }}/k3s-agent.service'
       owner: root
       group: root
       mode: '0755'
 
-- name: Check if kubectl is installed
-  ansible.builtin.command:
-      cmd: which kubectl
-  register: kubectl_installed
+- name: Check if port 6443 is in use
+  ansible.builtin.command: netstat -tuln | grep :6443
+  register: port_check
+  failed_when: port_check.stdout != ""
+
+## RECONFIGURE IP ADDRESS
+- name: Echo K3S_URL before change
+  ansible.builtin.shell:
+      cmd: 'grep ''^Environment="K3S_URL='' {{ systemd_dir }}/k3s-agent.service'
+  register: before_change
+  changed_when: false
   ignore_errors: true
+
+- name: Print K3S_URL before change
+  ansible.builtin.debug:
+      msg: '{{ before_change.stdout }}'
+
+- name: Update k3s-agent service file
+  ansible.builtin.lineinfile:
+      path: '{{ systemd_dir }}/k3s-agent.service'
+      regexp: '^Environment="K3S_URL=.*"$'
+      line: 'Environment="K3S_URL=https://{{ apiserver_endpoint }}:6443"'
+  notify: Reload systemd
+
+- name: Echo K3S_URL after change
+  ansible.builtin.shell:
+      cmd: 'grep ''^Environment="K3S_URL='' {{ systemd_dir }}/k3s-agent.service'
+  register: after_change
   changed_when: false
 
-- name: Install kubectl
-  ansible.builtin.package:
-      name: kubectl
-      state: present
-  when: kubectl_installed.rc != 0
+- name: Print K3S_URL after change
+  ansible.builtin.debug:
+      msg: '{{ after_change.stdout }}'
 
+# - name: Debug before restart
+#   ansible.builtin.debug:
+#       msg: 'About to restart k3s-agent service'
+
+# - name: Restart k3s-agent service
+#   ansible.builtin.systemd:
+#       name: k3s-agent
+#       state: restarted
+#       daemon_reload: true
+
+# - name: Debug after restart
+#   ansible.builtin.debug:
+#       msg: 'Restarted k3s-agent service'
+# END RECONFIGURE IP ADDRESS
+
+- name: Check k3s service status
+  ansible.builtin.command:
+      cmd: systemctl status k3s-agent.service
+  register: service_status
+  ignore_errors: true
+
+- name: Debug k3s service status
+  ansible.builtin.debug:
+      msg: '{{ service_status.stdout }}'
+
+## MANAGE SERVICES
 - name: Manage k3s service
   ansible.builtin.systemd:
-      name: k3s-node
+      name: k3s-agent
       daemon_reload: true
       state: restarted
       enabled: true
+  register: result
+  async: 60
+  poll: 5
+  failed_when: "'Failed' in service_status.stdout"
+  # verbosity: 2
+  # failed_when: "'FAILED' in result.stderr"
+  # failed_when: result.state == 'failed'
 
-- name: Get service info
-  ansible.builtin.shell:
-      cmd: "kubectl get service k3s-node -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}'"
-  register: service_info
-  changed_when: false
-  check_mode: false
-
-- name: Print service info
+- name: DEBUG RESULT for Manage k3s service
   ansible.builtin.debug:
-      msg: 'The service is running at {{ service_info.stdout }}'
+      var: result
+
+# - name: Get k3s service info
+#   ansible.builtin.shell:
+#       cmd: "kubectl get service k3s-agent -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}'"
+#   register: service_info
+#   changed_when: false
+#   check_mode: false
+
+- name: Ensure k3s-agent service is running
+  ansible.builtin.systemd:
+      name: k3s-agent
+      state: started
+      daemon_reload: true
+# ## TRYING TO GET SERVICE INFO USING NAME
+# - name: Get k3s service info (by name)
+#   ansible.builtin.shell:
+#       cmd: "kubectl get service k3s-agent -o jsonpath='{.status.loadBalancer.ingress[0].ip}:{.spec.ports[0].port}'"
+#   register: service_info
+#   changed_when: false
+#   check_mode: false
+#   async: 300
+#   poll: 10
+
+# - name: Print service info
+#   ansible.builtin.debug:
+#       msg: 'The service is running at {{ service_info.stdout }}'
+
+# ## TRYING TO GET SERVICE INFO USING IP
+
+# - name: Extract IP address
+#   ansible.builtin.set_fact:
+#       service_ip: "{{ service_info.stdout.split(':')[0] }}"
+
+# - name: Get service info using IP
+#   ansible.builtin.shell:
+#       cmd: 'kubectl get service --all-namespaces --field-selector spec.clusterIP={{ service_ip }}'
+#   register: service_info_ip
+#   changed_when: false
+#   check_mode: false
+
+# - name: Print service info using IP
+#   ansible.builtin.debug:
+#       msg: 'The service info for IP {{ service_ip }} is {{ service_info_ip.stdout }}'
+
+- name: Get k3s-agent logs
+  ansible.builtin.shell:
+      cmd: 'journalctl -u k3s-agent -n 100'
+  register: k3s_logs
+  changed_when: false
+
+- name: Print k3s-agent logs
+  ansible.builtin.debug:
+      msg: '{{ k3s_logs.stdout }}'
