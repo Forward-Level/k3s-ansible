@@ -2,7 +2,7 @@
 # The namespace of the collection. This can be a company/brand/organization or product namespace under which all
 # content lives. May only contain alphanumeric lowercase characters and underscores. Namespaces cannot start with
 # underscores or numbers and cannot contain consecutive underscores
-namespace: techno_tim
+namespace: flm_k3s
 
 # The name of the collection. Has the same character restrictions as 'namespace'
 name: k3s_ansible
@@ -16,44 +16,43 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- your name <example@domain.com>
-
+    # - your name <example@domain.com>
+    - Andy van der Raadt <andy@forwardlevel.com>
 
 ### OPTIONAL but strongly recommended
 # A short summary description of the collection
 description: >
-  The easiest way to bootstrap a self-hosted High Availability Kubernetes
-  cluster. A fully automated HA k3s etcd install with kube-vip, MetalLB,
-  and more.
+    The easiest way to bootstrap a self-hosted High Availability Kubernetes
+    cluster. A fully automated HA k3s etcd install with kube-vip, MetalLB,
+    and more.
 
 # Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
 license:
-- Apache-2.0
-
+    - Apache-2.0
 
 # A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
 # requirements as 'namespace' and 'name'
 tags:
-  - etcd
-  - high-availability
-  - k8s
-  - k3s
-  - k3s-cluster
-  - kube-vip
-  - kubernetes
-  - metallb
-  - rancher
+    - etcd
+    - high-availability
+    - k8s
+    - k3s
+    - k3s-cluster
+    - kube-vip
+    - kubernetes
+    - metallb
+    - rancher
 
 # Collections that this collection requires to be installed for it to be usable. The key of the dict is the
 # collection label 'namespace.name'. The value is a version range
 # L(specifiers,https://python-semanticversion.readthedocs.io/en/latest/#requirement-specification). Multiple version
 # range specifiers can be set and are separated by ','
 dependencies:
-  ansible.utils: '*'
-  ansible.posix: '*'
-  community.general: '*'
-  kubernetes.core: '*'
+    ansible.utils: '*'
+    ansible.posix: '*'
+    community.general: '*'
+    kubernetes.core: '*'
 
 # The URL of the originating SCM repository
 repository: https://github.com/techno-tim/k3s-ansible
@@ -72,7 +71,6 @@ issues: https://github.com/techno-tim/k3s-ansible/issues
 # uses 'fnmatch' to match the files or directories. Some directories and files like 'galaxy.yml', '*.pyc', '*.retry',
 # and '.git' are always filtered. Mutually exclusive with 'manifest'
 build_ignore: []
-
 # A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
 # list of MANIFEST.in style
 # L(directives,https://packaging.python.org/en/latest/guides/using-manifest-in/#manifest-in-commands). The key

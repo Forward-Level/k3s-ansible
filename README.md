@@ -18,25 +18,25 @@ If you want more context on how this works, see:
 
 Build a Kubernetes cluster using Ansible with k3s. The goal is easily install a HA Kubernetes cluster on machines running:
 
-- [x] Debian (tested on version 11)
-- [x] Ubuntu (tested on version 22.04)
-- [x] Rocky (tested on version 9)
+-   [x] Debian (tested on version 11)
+-   [x] Ubuntu (tested on version 22.04)
+-   [x] Rocky (tested on version 9)
 
 on processor architecture:
 
-- [X] x64
-- [X] arm64
-- [X] armhf
+-   [x] x64
+-   [x] arm64
+-   [x] armhf
 
 ## ✅ System requirements
 
-- Control Node (the machine you are running `ansible` commands) must have Ansible 2.11+ If you need a quick primer on Ansible [you can check out my docs and setting up Ansible](https://technotim.live/posts/ansible-automation/).
+-   Control Node (the machine you are running `ansible` commands) must have Ansible 2.11+ If you need a quick primer on Ansible [you can check out my docs and setting up Ansible](https://technotim.live/posts/ansible-automation/).
 
-- You will also need to install collections that this playbook uses by running `ansible-galaxy collection install -r ./collections/requirements.yml` (important❗)
+-   You will also need to install collections that this playbook uses by running `ansible-galaxy collection install -r ./collections/requirements.yml` (important❗)
 
-- [`netaddr` package](https://pypi.org/project/netaddr/) must be available to Ansible. If you have installed Ansible via apt, this is already taken care of. If you have installed Ansible via `pip`, make sure to install `netaddr` into the respective virtual environment.
+-   [`netaddr` package](https://pypi.org/project/netaddr/) must be available to Ansible. If you have installed Ansible via apt, this is already taken care of. If you have installed Ansible via `pip`, make sure to install `netaddr` into the respective virtual environment.
 
-- `server` and `agent` nodes should have passwordless SSH access, if not you can supply arguments to provide credentials `--ask-pass --ask-become-pass` to each command.
+-   `server` and `agent` nodes should have passwordless SSH access, if not you can supply arguments to provide credentials `--ask-pass --ask-become-pass` to each command.
 
 ## 🚀 Getting Started
 
@@ -69,6 +69,7 @@ For example:
 master
 node
 ```
+
 ~~
 
 If multiple hosts are in the master group, the playbook will automatically set up k3s in [HA mode with etcd](https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/).
@@ -95,7 +96,7 @@ After deployment control plane will be accessible via virtual ip-address which i
 ansible-playbook reset.yml -i inventory/my-cluster/hosts.ini
 ```
 
->You should also reboot these nodes due to the VIP not being destroyed
+> You should also reboot these nodes due to the VIP not being destroyed
 
 ## ⚙️ Kube Config
 
@@ -142,7 +143,7 @@ You can find more information about it [here](molecule/README.md).
 
 ### Pre-commit Hooks
 
-This repo uses `pre-commit` and `pre-commit-hooks` to lint and fix common style and syntax errors.  Be sure to install python packages and then run `pre-commit install`.  For more information, see [pre-commit](https://pre-commit.com/)
+This repo uses `pre-commit` and `pre-commit-hooks` to lint and fix common style and syntax errors. Be sure to install python packages and then run `pre-commit install`. For more information, see [pre-commit](https://pre-commit.com/)
 
 ## 🌌 Ansible Galaxy
 
@@ -150,29 +151,29 @@ This collection can now be used in larger ansible projects.
 
 Instructions:
 
-- create or modify a file `collections/requirements.yml` in your project
+-   create or modify a file `collections/requirements.yml` in your project
 
 ```yml
 collections:
-  - name: ansible.utils
-  - name: community.general
-  - name: ansible.posix
-  - name: kubernetes.core
-  - name: https://github.com/techno-tim/k3s-ansible.git
-    type: git
-    version: master
+    - name: ansible.utils
+    - name: community.general
+    - name: ansible.posix
+    - name: kubernetes.core
+    - name: https://github.com/techno-tim/k3s-ansible.git
+      type: git
+      version: master
 ```
 
-- install via `ansible-galaxy collection install -r ./collections/requirements.yml`
-- every role is now available via the prefix `techno_tim.k3s_ansible.` e.g. `techno_tim.k3s_ansible.lxc`
+-   install via `ansible-galaxy collection install -r ./collections/requirements.yml`
+-   every role is now available via the prefix `techno_tim.k3s_ansible.` e.g. `techno_tim.k3s_ansible.lxc`
 
 ## Thanks 🤝
 
 This repo is really standing on the shoulders of giants. Thank you to all those who have contributed and thanks to these repos for code and ideas:
 
-- [k3s-io/k3s-ansible](https://github.com/k3s-io/k3s-ansible)
-- [geerlingguy/turing-pi-cluster](https://github.com/geerlingguy/turing-pi-cluster)
-- [212850a/k3s-ansible](https://github.com/212850a/k3s-ansible)
+-   [k3s-io/k3s-ansible](https://github.com/k3s-io/k3s-ansible)
+-   [geerlingguy/turing-pi-cluster](https://github.com/geerlingguy/turing-pi-cluster)
+-   [212850a/k3s-ansible](https://github.com/212850a/k3s-ansible)
 
 # K3S for Forward Level with Ansible
 
@@ -184,16 +185,16 @@ This repository and playbook represents the configuration for running forwardlev
 
 On the controlling device (eg, my local Mac):
 
-- Ansible
-  - `brew install ansible`
+-   Ansible
+    -   `brew install ansible`
 
 On the deployment servers:
 
-- TBD
+-   TBD
 
 Optionally
 
-- Tailscale
+-   Tailscale
 
 ## INSTALLATION STEPS
 
@@ -214,7 +215,7 @@ It will automatically initialize and update each submodule in the repository, in
 
 If you want to do it the hard way, `git clone xyz` …downloads as normal but, while the submodule directory is there, it is empty. You must run the following two commands:
 
-    1. `git submodule init` to initialize your local configuration file, and 
+    1. `git submodule init` to initialize your local configuration file, and
     2. `git submodule update` to fetch all the data from that project and check out the appropriate commit listed in your superproject.
 
 ### 2. Ansible
@@ -255,8 +256,6 @@ master
 node
 ```
 
-
-
 ### 2a Preparing test servers:
 
 #Create users on all servers:
@@ -284,6 +283,8 @@ for ip in 100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52; 
 
 #confirm users and keys
 for ip in 100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52; do ssh osho@$ip 'whoami && hostname'; done
+
+~~
 
 ### 3. Adventures in load balancing: configuration of nginx as a HTTP/HTTPS load balancer
 
@@ -380,10 +381,10 @@ Use the health checks. They allow you to adapt your server back-end to the curre
         # twice the number of requests compared to `andys-imac`.
 
         # `LINODE_WORKER1` and `LINODE_WORKER2` have weights of 4;
-        # the other two servers have the default weight (1), but 
+        # the other two servers have the default weight (1), but
         # FALLBACK_WORKER1, FALLBACK_WORKER2, and FALLBACK_WORKER3 are
         # marked as backup servers and do not receive requests unless both
-        # of the other servers are unavailable. With this configuration of 
+        # of the other servers are unavailable. With this configuration of
         # weights, out of every 6 requests, 5 are sent to backend1.example.com and 1 to backend2.example.com.
 
         # It's generally a good idea to have health checks on all servers.
@@ -436,8 +437,10 @@ Prerequisites:
 
     The only special software required is Ansible, running on one central device that manipulates the remote targets. If you wish to learn more about Ansible, the [official documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html) is quite extensive.
 
-    NOTE: From the Rancher documentation, [Deploying k3s with Ansible](https://www.suse.com/c/rancher_blog/deploying-k3s-with-ansible/), regarding the Ubuntu installation phase: 
+    NOTE: From the Rancher documentation, [Deploying k3s with Ansible](https://www.suse.com/c/rancher_blog/deploying-k3s-with-ansible/), regarding the Ubuntu installation phase:
     > The 'SSH Setup' screen is also important. The Ubuntu Server installation process lets you import SSH public keys from a GitHub profile, allowing you to connect via SSH to your newly created VM with your existing SSH key. To take advantage of this, [make sure you add an SSH key to GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) before completing this step. This is highly recommended, as although Ansible can connect to your VMs via SSH using a password, doing so requires extra configuration. It is also generally good to use SSH keys rather than passwords for security reasons.
+
+~~
 
 ### 4. Installing Helm
 
@@ -507,7 +510,7 @@ If using Tailscale to manage the network, provide the following:
 Finally, I have provisioned three fallback workers that should be the lowest priority on the stack.
 
      - `FALLBACK_WORKER1` is on my personal Linode server, `orbital`
-     - `FALLBACK_WORKER2` is an Ubuntu container on my homelab Proxmox server. 
+     - `FALLBACK_WORKER2` is an Ubuntu container on my homelab Proxmox server.
      - `FALLBACK_WORKER3` is an Ubuntu-based Docker container on my desktop at the office
 
 I've set these three fallbacks up in a named order that implies their expected availability and internet speeds. Linode's fiber backbone connection is going to be the most reliable, and their uptime guarantee is pretty solid. My home internet plan is 1000mbps and the machines are on 24/7, but have no guarantees. At the office, the wifi is slow(er) and truly anything could happen.
