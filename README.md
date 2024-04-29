@@ -1,5 +1,7 @@
 # Automated build of HA k3s Cluster with `kube-vip` and MetalLB
 
+<!-- These are the pre-existing installation instructions from the base repo. FLM-specific insructions, with more detials, below. -->
+
 ![Fully Automated K3S etcd High Availability Install](https://img.youtube.com/vi/CbkEWcUZ7zM/0.jpg)
 
 This playbook will build an HA Kubernetes cluster with `k3s`, `kube-vip` and MetalLB via `ansible`.
@@ -40,6 +42,9 @@ on processor architecture:
 
 ### 🍴 Preparation
 
+Until I clean this up: SEE THE FLM INSTRUCTIONS in the section at the bottom.
+
+~~
 First create a new directory based on the `sample` directory within the `inventory` directory:
 
 ```bash
@@ -64,6 +69,7 @@ For example:
 master
 node
 ```
+~~
 
 If multiple hosts are in the master group, the playbook will automatically set up k3s in [HA mode with etcd](https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/).
 
@@ -168,7 +174,7 @@ This repo is really standing on the shoulders of giants. Thank you to all those 
 - [geerlingguy/turing-pi-cluster](https://github.com/geerlingguy/turing-pi-cluster)
 - [212850a/k3s-ansible](https://github.com/212850a/k3s-ansible)
 
-# FLM CONFIG: K3S for Forward Level with Ansible
+# K3S for Forward Level with Ansible
 
 ## INTRODUCTION
 
@@ -202,14 +208,14 @@ When you clone such a project, by default you get the directories that contain s
 
 Alternatively, run:
 
-`git clone --recurse-submodules https://github.com/forward-level/xyz`
+`git clone --recurse-submodules git@github.com:Forward-Level/k3s-ansible.git`
 
 It will automatically initialize and update each submodule in the repository, including nested submodules if any of the submodules in the repository have submodules themselves.
 
 If you want to do it the hard way, `git clone xyz` …downloads as normal but, while the submodule directory is there, it is empty. You must run the following two commands:
 
-  1. Use `git submodule init` to initialize your local configuration file and 
-  2. Use `git submodule update` to fetch all the data from that project and check out the appropriate commit listed in your superproject.
+    1. `git submodule init` to initialize your local configuration file, and 
+    2. `git submodule update` to fetch all the data from that project and check out the appropriate commit listed in your superproject.
 
 ### 2. Ansible
 
@@ -217,11 +223,11 @@ If you want to do it the hard way, `git clone xyz` …downloads as normal but, w
 
 **IMPORTANT!!!** You will need to install collections that the Ansible playbook uses by running
 
-`ansible-galaxy collection install -r ./collections/requirements.yml`
+    `ansible-galaxy collection install -r ./collections/requirements.yml`
 
 Additionally, the `netaddr` package must be available to Ansible. If you have installed Ansible via apt, this is already taken care of. If you have installed Ansible via pip, make sure to install netaddr into the respective virtual environment. In terms of Homebrew on the Mac, I installed using `brew install netaddr`.
 
-Edit the `inventory/sample/hosts.ini` file with the IPs of our control servers and our worker nodes:
+Edit the `inventory/flm/hosts.ini` file with the IPs of our control servers and our worker nodes:
 
 ```text
 [master]
@@ -248,6 +254,36 @@ Edit the `inventory/sample/hosts.ini` file with the IPs of our control servers a
 master
 node
 ```
+
+
+
+### 2a Preparing test servers:
+
+#Create users on all servers:
+sudo groupadd -g 1000 osho && sudo useradd -u 1000 -g 1000 -d /home/osho -s /bin/bash osho && sudo passwd osho
+sudo groupadd -g 1000 osho && sudo useradd -u 1000 -g 1000 -d /home/osho -s /bin/bash osho && sudo adduser osho sudo
+
+#install tailscale
+curl -fsSL https://tailscale.com/install.sh | sh
+tailscale up
+tailscale ip
+
+100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52
+
+100.75.31.27
+100.112.208.64
+100.68.11.93
+100.74.96.126
+100.91.134.52
+
+#create folders
+for ip in 100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52; do ssh root@$ip 'mkdir /home/osho && sudo chown osho /home/osho && mkdir /home/osho/.ssh && sudo chown osho /home/osho/.ssh'; done
+
+#copy keys
+for ip in 100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52; do ssh-copy-id -i /Users/andy/.ssh/id_rsa.pub osho@$ip; done
+
+#confirm users and keys
+for ip in 100.75.31.27 100.112.208.64 100.68.11.93 100.74.96.126 100.91.134.52; do ssh osho@$ip 'whoami && hostname'; done
 
 ### 3. Adventures in load balancing: configuration of nginx as a HTTP/HTTPS load balancer
 
